@@ -10,8 +10,11 @@ if [ ! -d ${REPO_PATH} ]; then
     cat << EOF > ${REPO_PATH}/hooks/post-receive
 #!/bin/bash
 unset GIT_INDEX_FILE
-git --work-tree="${WORKTREE}" clean -df
-git --work-tree="${WORKTREE}" checkout -f
+
+git --work-tree="${WORKTREE}" --git-dir="${REPO_PATH}" clean -df
+git --work-tree="${WORKTREE}" --git-dir="${REPO_PATH}" checkout -f
+cd "${WORKTREE}"
+git --work-tree="${WORKTREE}" --git-dir="${REPO_PATH}" submodule update --init --recursive
 EOF
 
     chmod a+x ${REPO_PATH}/hooks/post-receive > /dev/null
