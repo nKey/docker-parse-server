@@ -18,7 +18,15 @@
     "nodemon": "^1.11.0",
     "parse": "~1.9.2",
     "parse-server": "2.3.1",
-    "parse-server-azure-storage": "^1.1.0"
+    "parse-server-azure-storage": "^1.1.0",
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
+    "parse-cloud-express": "^1.2.0",
+    "parse-express-cookie-session": "git+https://github.com/flovilmart/parse-express-cookie-session.git",
+    "parse-express-https-redirect": "0.0.1",
+    "parse-express-raw-body": "0.0.1",
+    "parse-image": "^0.2.0",
+    "underscore": "^1.8.3"
   },
   "scripts": {
     "start": "nodemon --watch /parse/cloud index.js"
