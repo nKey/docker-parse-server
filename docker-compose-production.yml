@@ -1,11 +1,12 @@
 parse-server:
   #build: .
-  image: yongjhih/parse-server
+  image: nkeymobile/docker-parse-server
   ports:
     - "1337:1337"
   environment:
     PORT: 1337
     DATABASE_URI: $DATABASE_URI
+    CLOUD_CODE_MAIN: $CLOUD_CODE_MAIN # /parse/cloud/main.js
     APP_ID: $APP_ID
     MASTER_KEY: $MASTER_KEY
     PARSE_MOUNT: $PARSE_MOUNT # /parse
@@ -47,7 +48,7 @@ parse-server:
     TESTING: $TESTING # 0
     APP_NAME: $APP_NAME
     PUBLIC_SERVER_URL: $PUBLIC_SERVER_URL
-    TRUST_PROXY: $TRUST_PROXY
+    TRUST_PROXY:      $TRUST_PROXY
     S3_ACCESS_KEY:    $S3_ACCESS_KEY
     S3_SECRET_KEY:    $S3_SECRET_KEY
     S3_BUCKET:        $S3_BUCKET
@@ -60,10 +61,11 @@ parse-server:
     AZURE_CONTAINER:  $AZURE_CONTAINER
     AZURE_ACCESS_KEY: $AZURE_ACCESS_KEY
     AZURE_DIRECT:     $AZURE_DIRECT
+    VIRTUAL_HOST:      $PARSE_SERVER_VIRTUAL_HOST
+    LETSENCRYPT_HOST:  $PARSE_SERVER_LETSENCRYPT_HOST
+    LETSENCRYPT_EMAIL: $PARSE_SERVER_LETSENCRYPT_EMAIL
     GRAPHQL_SUPPORT:  $GRAPHQL_SUPPORT
     GRAPHQL_SCHEMA:   $GRAPHQL_SCHEMA
-  links:
-    - mongo
   volumes_from:
     - parse-cloud-code
   volumes:
@@ -72,13 +74,13 @@ parse-server:
 
 parse-cloud-code:
   #build: cloud/.
-  image: yongjhih/parse-cloud-code
+  #image: yongjhih/parse-cloud-code
   volumes:
     - /parse/cloud
   command: "ls /parse/cloud"
 
 git:
-  image: yongjhih/parse-server:git
+  image: nkeymobile/docker-parse-server:git
   ports:
     - "2022:22"
   environment:
@@ -88,24 +90,8 @@ git:
   volumes_from:
     - parse-server
 
-mongo:
-  image: mongo:3.0.8 # ref. https://github.com/ParsePlatform/parse-server/issues/1913
-  ports:
-    - "27017:27017"
-  volumes_from:
-    - mongo-data
-#  command: "--smallfiles --logpath=/dev/null --setParameter failIndexKeyTooLong=false --rest --auth"
-  command: "--smallfiles --logpath=/dev/null --setParameter failIndexKeyTooLong=false"
-# ref. http://www.diogogmt.com/running-mongodb-with-docker-and-compose/
-
-mongo-data:
-  image: mongo
-  volumes:
-    - /data/db
-  command: "--break-mongo"
-
 parse-dashboard:
-  image: yongjhih/parse-dashboard:1.0.18
+  image: yongjhih/parse-dashboard
   links:
     - parse-server
   environment:
@@ -126,11 +112,44 @@ parse-dashboard:
     PARSE_DASHBOARD_CONFIG: $PARSE_DASHBOARD_CONFIG
     MOUNT_PATH: $PARSE_DASHBOARD_MOUNT_PATH
     TRUST_PROXY: $PARSE_DASHBOARD_TRUST_PROXY
+    VIRTUAL_HOST:      $PARSE_DASHBOARD_VIRTUAL_HOST
+    LETSENCRYPT_HOST:  $PARSE_DASHBOARD_LETSENCRYPT_HOST
+    LETSENCRYPT_EMAIL: $PARSE_DASHBOARD_LETSENCRYPT_EMAIL
     PORT: 4040
   ports:
     - "4040:4040"
-  command: parse-dashboard
 #  volumes:
 #    - "parse-dashboard-config.json:/src/Parse-Dashboard/parse-dashboard-config.json"
+
+nginx:
+  image: nginx
+  container_name: nginx
+  ports:
+    - "80:80"
+    - "443:443"
+  volumes:
+    - "/etc/nginx/conf.d"
+    - "/etc/nginx/vhost.d"
+    - "/usr/share/nginx/html"
+    - "./volumes/proxy/certs:/etc/nginx/certs:ro"
+nginx-gen:
+  image: jwilder/docker-gen
+  container_name: nginx-gen
+  volumes:
+    - "/var/run/docker.sock:/tmp/docker.sock:ro"
+    - "./volumes/proxy/templates/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl:ro"
+  volumes_from:
+    - nginx
+  entrypoint: /usr/local/bin/docker-gen -notify-sighup nginx -watch -only-exposed -wait 5s:30s /etc/docker-gen/templates/nginx.tmpl /etc/nginx/conf.d/default.conf
+letsencrypt-nginx-proxy-companion:
+  image: jrcs/letsencrypt-nginx-proxy-companion
+  container_name: letsencrypt-nginx-proxy-companion
+  volumes_from:
+    - nginx
+  volumes:
+    - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    - "./volumes/proxy/certs:/etc/nginx/certs:rw"
+  environment:
+    - NGINX_DOCKER_GEN_CONTAINER=nginx-gen
 
 # vim:set et ts=2 sw=2:
