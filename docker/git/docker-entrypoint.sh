@@ -19,8 +19,8 @@ EOF
 
     chmod a+x ${REPO_PATH}/hooks/post-receive > /dev/null
 
-    chown -R git:git ${REPO_PATH} > /dev/null
-    chown -R git:git "$WORKTREE" > /dev/null
+    chown -R git:git "${REPO_PATH}" > /dev/null
+    chown -R git:git "${WORKTREE}" > /dev/null
 fi
 
 exec "$@"
