@@ -2,7 +2,6 @@ version: '2'
 services:
   parse-server:
     image: nkeymobile/docker-parse-server
-    mem_limit: 256MB
     ports:
       - "1337:1337"
     environment:
@@ -74,7 +73,6 @@ services:
 
   git:
     image: nkeymobile/docker-parse-server:git
-    mem_limit: 64MB
     ports:
       - "2022:22"
     environment:
@@ -84,7 +82,6 @@ services:
 
   parse-dashboard:
     image: yongjhih/parse-dashboard
-    mem_limit: 256MB
     depends_on:
       - parse-server
     environment:
@@ -115,7 +112,6 @@ services:
   nginx:
     image: nginx
     container_name: nginx
-    mem_limit: 128MB
     ports:
       - "80:80"
       - "443:443"
@@ -127,7 +123,6 @@ services:
   nginx-gen:
     image: jwilder/docker-gen
     container_name: nginx-gen
-    mem_limit: 64MB
     volumes:
       - "/var/run/docker.sock:/tmp/docker.sock:ro"
       - "./volumes/proxy/templates/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl:ro"
@@ -137,7 +132,6 @@ services:
   letsencrypt-nginx-proxy-companion:
     image: jrcs/letsencrypt-nginx-proxy-companion
     container_name: letsencrypt-nginx-proxy-companion
-    mem_limit: 64MB
     volumes_from:
       - container: nginx
     volumes:
