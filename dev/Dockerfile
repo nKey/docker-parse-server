@@ -13,7 +13,7 @@ RUN apt-get update && \
 #ADD *.json ${PARSE_HOME}/
 
 ENV CLOUD_CODE_HOME ${PARSE_HOME}/cloud
-ADD cloud/*.js $CLOUD_CODE_HOME/
+COPY cloud/cloud $CLOUD_CODE_HOME/cloud
 
 WORKDIR $PARSE_HOME
 RUN npm install
@@ -22,7 +22,7 @@ RUN npm install
 #ENV APP_ID myAppId
 #ENV MASTER_KEY myMasterKey
 #ENV DATABASE_URI mongodb://localhost:27017/dev
-ENV CLOUD_CODE_MAIN ${CLOUD_CODE_HOME}/main.js
+ENV CLOUD_CODE_MAIN ${CLOUD_CODE_HOME}/cloud/main.js
 #ENV PARSE_MOUNT /parse
 #ENV COLLECTION_PREFIX
 #ENV CLIENT_KEY

@@ -20,7 +20,7 @@ ADD jsconfig.json ${PARSE_HOME}/
 #ADD azuredeploy.json ${PARSE_HOME}/azuredeploy.json # azure
 
 ENV CLOUD_CODE_HOME ${PARSE_HOME}/cloud
-ADD cloud/*.js $CLOUD_CODE_HOME/
+COPY cloud/cloud $CLOUD_CODE_HOME/cloud
 
 WORKDIR $PARSE_HOME
 RUN npm install
