@@ -9,7 +9,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 ENV CLOUD_CODE_HOME ${PARSE_HOME}/cloud
-COPY cloud/cloud $CLOUD_CODE_HOME/cloud
+COPY cloud/cloud/ $CLOUD_CODE_HOME/cloud/
 
 WORKDIR $PARSE_HOME
 RUN npm install

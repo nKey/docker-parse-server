@@ -11,7 +11,7 @@ COPY package.json ${PARSE_HOME}/
 COPY jsconfig.json ${PARSE_HOME}/
 
 ENV CLOUD_CODE_HOME ${PARSE_HOME}/cloud
-COPY cloud/cloud $CLOUD_CODE_HOME/cloud
+COPY cloud/cloud/ $CLOUD_CODE_HOME/cloud/
 
 WORKDIR $PARSE_HOME
 RUN npm install
