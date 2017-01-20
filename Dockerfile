@@ -2,6 +2,11 @@ FROM node:5
 
 ENV PARSE_HOME /parse
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git openssh-server && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 #ADD . ${PARSE_HOME}
 #ADD *.js ${PARSE_HOME}/
 #ADD *.json ${PARSE_HOME}/
