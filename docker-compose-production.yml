@@ -78,7 +78,7 @@ services:
     environment:
       PORT: 22
     volumes_from:
-      - container: parse-server
+      - parse-server
 
   parse-dashboard:
     image: yongjhih/parse-dashboard
@@ -127,13 +127,13 @@ services:
       - "/var/run/docker.sock:/tmp/docker.sock:ro"
       - "./volumes/proxy/templates/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl:ro"
     volumes_from:
-      - container: nginx
+      - nginx
     entrypoint: /usr/local/bin/docker-gen -notify-sighup nginx -watch -only-exposed -wait 5s:30s /etc/docker-gen/templates/nginx.tmpl /etc/nginx/conf.d/default.conf
   letsencrypt-nginx-proxy-companion:
     image: jrcs/letsencrypt-nginx-proxy-companion
     container_name: letsencrypt-nginx-proxy-companion
     volumes_from:
-      - container: nginx
+      - nginx
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./volumes/proxy/certs:/etc/nginx/certs:rw"
