@@ -1,4 +1,5 @@
 {
+    "AWSEBDockerrunVersion": 2,
     "containerDefinitions": [
         {
             "environment": [
@@ -8,7 +9,7 @@
                 }
             ],
             "essential": false,
-            "memory": 64,
+            "memoryReservation": 64,
             "image": "nkeymobile/docker-parse-server:git",
             "name": "git",
             "portMappings": [
@@ -19,9 +20,7 @@
             ],
             "volumesFrom": [
                 {
-                    "sourceContainer": {
-                        "container": "parse-server"
-                    }
+                    "sourceContainer": "parse-server"
                 }
             ]
         },
@@ -33,26 +32,29 @@
                 }
             ],
             "essential": false,
-            "memory": 64,
+            "memoryReservation": 64,
             "image": "jrcs/letsencrypt-nginx-proxy-companion",
             "mountPoints": [
                 {
                     "containerPath": "/var/run/docker.sock",
-                    "sourceVolume": "VarRunDocker_Sock"
+                    "sourceVolume": "VarRunDocker_Sock",
+                    "readOnly": true
+                },
+                {
+                    "containerPath": "/etc/nginx/certs",
+                    "sourceVolume": "_VolumesProxyCerts"
                 }
             ],
             "name": "letsencrypt-nginx-proxy-companion",
             "volumesFrom": [
                 {
-                    "sourceContainer": {
-                        "container": "nginx"
-                    }
+                    "sourceContainer": "nginx"
                 }
             ]
         },
         {
             "essential": true,
-            "memory": 128,
+            "memoryReservation": 64,
             "image": "nginx",
             "mountPoints": [
                 {
@@ -69,7 +71,8 @@
                 },
                 {
                     "containerPath": "/etc/nginx/certs",
-                    "sourceVolume": "_VolumesProxyCerts"
+                    "sourceVolume": "_VolumesProxyCerts",
+                    "readOnly": true
                 }
             ],
             "name": "nginx",
@@ -85,7 +88,7 @@
             ]
         },
         {
-            "entryPoint": [
+            "command": [
                 "/usr/local/bin/docker-gen",
                 "-notify-sighup",
                 "nginx",
@@ -97,24 +100,24 @@
                 "/etc/nginx/conf.d/default.conf"
             ],
             "essential": false,
-            "memory": 64,
+            "memoryReservation": 64,
             "image": "jwilder/docker-gen",
             "mountPoints": [
                 {
                     "containerPath": "/tmp/docker.sock",
-                    "sourceVolume": "VarRunDocker_Sock"
+                    "sourceVolume": "VarRunDocker_Sock",
+                    "readOnly": true
                 },
                 {
                     "containerPath": "/etc/docker-gen/templates/nginx.tmpl",
-                    "sourceVolume": "_VolumesProxyTemplatesNginx_Tmpl"
+                    "sourceVolume": "_VolumesProxyTemplatesNginx_Tmpl",
+                    "readOnly": true
                 }
             ],
             "name": "nginx-gen",
             "volumesFrom": [
                 {
-                    "sourceContainer": {
-                        "container": "nginx"
-                    }
+                    "sourceContainer": "nginx"
                 }
             ]
         },
@@ -206,7 +209,7 @@
                 }
             ],
             "essential": true,
-            "memory": 256,
+            "memoryReservation": 128,
             "image": "yongjhih/parse-dashboard",
             "name": "parse-dashboard",
             "portMappings": [
@@ -214,6 +217,9 @@
                     "containerPort": 4040,
                     "hostPort": 4040
                 }
+            ],
+            "links": [
+                "parse-server"
             ]
         },
         {
@@ -468,7 +474,7 @@
                 }
             ],
             "essential": true,
-            "memory": 256,
+            "memoryReservation": 128,
             "image": "nkeymobile/docker-parse-server",
             "mountPoints": [
                 {
@@ -489,17 +495,16 @@
             ]
         }
     ],
-    "family": "",
     "volumes": [
         {
             "host": {
-                "sourcePath": "parse-cloud-code"
+                "sourcePath": "/parse-cloud-code"
             },
             "name": "Parse-Cloud-Code"
         },
         {
             "host": {
-                "sourcePath": "./volumes/certs"
+                "sourcePath": "/var/app/current/volumes/certs"
             },
             "name": "_VolumesCerts"
         },
@@ -523,7 +528,7 @@
         },
         {
             "host": {
-                "sourcePath": "./volumes/proxy/certs"
+                "sourcePath": "/var/app/current/volumes/proxy/certs"
             },
             "name": "_VolumesProxyCerts"
         },
@@ -535,7 +540,7 @@
         },
         {
             "host": {
-                "sourcePath": "./volumes/proxy/templates/nginx.tmpl"
+                "sourcePath": "/var/app/current/volumes/proxy/templates/nginx.tmpl"
             },
             "name": "_VolumesProxyTemplatesNginx_Tmpl"
         }
