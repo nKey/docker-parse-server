@@ -26,7 +26,8 @@
     "parse-express-https-redirect": "0.0.1",
     "parse-express-raw-body": "0.0.1",
     "parse-image": "^0.2.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "ejs": "^2.5.5"
   },
   "scripts": {
     "start": "nodemon --watch /parse/cloud index.js"
