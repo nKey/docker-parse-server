@@ -16,7 +16,7 @@ services:
       REST_API_KEY: $REST_API_KEY
       DOTNET_KEY: $DOTNET_KEY
       JAVASCRIPT_KEY: $JAVASCRIPT_KEY
-      FILE_KEY: $FILE_KEY
+      #FILE_KEY: $FILE_KEY  # must not be defined if not used
       FACEBOOK_APP_IDS: $FACEBOOK_APP_IDS
       SERVER_URL: $SERVER_URL
       MAX_UPLOAD_SIZE: $MAX_UPLOAD_SIZE # 20mb
