@@ -8,6 +8,7 @@ services:
       PORT: 1337
       DATABASE_URI: $DATABASE_URI
       CLOUD_CODE_MAIN: $CLOUD_CODE_MAIN # /parse/cloud/main.js
+      APP_ROUTES: $APP_ROUTES 
       APP_ID: $APP_ID
       MASTER_KEY: $MASTER_KEY
       PARSE_MOUNT: $PARSE_MOUNT # /parse
