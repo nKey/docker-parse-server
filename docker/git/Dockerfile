@@ -23,5 +23,6 @@ RUN echo "git ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 ADD docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
+VOLUME $REPO_PATH
 
 CMD ["/usr/sbin/sshd", "-D"]

@@ -4,9 +4,13 @@ set -e
 
 if [ ! -d ${REPO_PATH} ]; then
     mkdir -p ${REPO_PATH}
+fi
 
+if ! $(git -C ${REPO_PATH} rev-parse &> /dev/null); then
     git init --bare ${REPO_PATH} > /dev/null
+fi
 
+if [ ! -f ${REPO_PATH}/hooks/post-receive ]; then
     cat << EOF > ${REPO_PATH}/hooks/post-receive
 #!/bin/bash
 unset GIT_INDEX_FILE
